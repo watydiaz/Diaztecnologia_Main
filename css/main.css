@@ -1,0 +1,25 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Añadido */
+    margin: 0; /* Añadido */
+}
+
+.footer {
+    margin-top: auto;
+    /* Añadido */
+    background: #f1f1f1;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%; /* Añadido */
+}
+
+.logo {
+    width: 120px; /* Ajusta el tamaño según sea necesario */
+    height: auto; /* Mantiene la proporción de la imagen */
+}
+
