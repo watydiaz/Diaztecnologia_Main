@@ -6,7 +6,7 @@ include '../includes/header.php';
 <div class="container">
     <h1>Registro de Reparaciones</h1>
     <form id="registroReparacionesForm">
-        <input type="hidden" id="clienteId" name="clienteId" value="1">
+        <input type="hidden" id="clienteId" name="clienteId">
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="fechaHoraRecepcion">Fecha y Hora de Recepción</label>
@@ -14,25 +14,28 @@ include '../includes/header.php';
             </div>
             <div class="form-group col-md-4">
                 <label for="identificacion">Identificación</label>
-                <input type="text" class="form-control" id="identificacion" name="identificacion" placeholder="Identificación" value="123456789">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="identificacion" name="identificacion" placeholder="Identificación">
+                    <div id="resultadosBusqueda" class="list-group"></div>
+                </div>
             </div>
             <div class="form-group col-md-4">
                 <label for="nombreCliente">Nombre Cliente</label>
-                <input type="text" class="form-control" id="nombreCliente" name="nombreCliente" placeholder="Nombre Cliente" value="Juan Pérez">
+                <input type="text" class="form-control" id="nombreCliente" name="nombreCliente" placeholder="Nombre Cliente">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="celular">Celular</label>
-                <input type="text" class="form-control" id="celular" name="celular" placeholder="Celular" value="987654321">
+                <input type="text" class="form-control" id="celular" name="celular" placeholder="Celular">
             </div>
             <div class="form-group col-md-4">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="juan.perez@example.com">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email">
             </div>
             <div class="form-group col-md-4">
                 <label for="direccion">Dirección</label>
-                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Dirección" value="Calle Falsa 123">
+                <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Dirección">
             </div>
         </div>
         <div class="form-row">
@@ -102,6 +105,33 @@ include '../includes/header.php';
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        $('#identificacion').on('input', function() {
+            var identificacion = $(this).val();
+            if (identificacion) {
+                $.get('../controllers/buscarCliente.php', { identificacion: identificacion }, function(data) {
+                    var clientes = JSON.parse(data);
+                    var resultados = '';
+                    clientes.forEach(function(cliente) {
+                        resultados += '<a href="#" class="list-group-item list-group-item-action" data-cliente=\'' + JSON.stringify(cliente) + '\'>' + cliente.nombre + ' (' + cliente.identificacion + ')</a>';
+                    });
+                    $('#resultadosBusqueda').html(resultados);
+                });
+            } else {
+                $('#resultadosBusqueda').empty();
+            }
+        });
+
+        $('#resultadosBusqueda').on('click', '.list-group-item', function() {
+            var cliente = $(this).data('cliente');
+            $('#clienteId').val(cliente.id);
+            $('#identificacion').val(cliente.identificacion);
+            $('#nombreCliente').val(cliente.nombre);
+            $('#celular').val(cliente.celular);
+            $('#email').val(cliente.email);
+            $('#direccion').val(cliente.direccion);
+            $('#resultadosBusqueda').empty();
+        });
+
         $('#registroReparacionesForm').on('submit', function(event) {
             event.preventDefault();
             $.ajax({
@@ -109,7 +139,8 @@ include '../includes/header.php';
                 type: 'POST',
                 data: $(this).serialize(),
                 success: function(response) {
-                    alert('Registro exitoso: ' + response);
+                    alert('Registro exitoso');
+                    $('#registroReparacionesForm')[0].reset();
                 },
                 error: function(xhr, status, error) {
                     alert('Error en el registro: ' + xhr.responseText);

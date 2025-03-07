@@ -24,12 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $abonoCliente = $_POST['abonoCliente'];
     $fechaHoraRecepcion = date('Y-m-d H:i:s');
 
-    // Inserta los datos del cliente en la tabla clientes
-    $stmtCliente = $conn->prepare("INSERT INTO clientes (nombre, identificacion, celular, email, direccion) VALUES (?, ?, ?, ?, ?)");
-    $stmtCliente->bind_param("sssss", $nombreCliente, $identificacion, $celular, $email, $direccion);
-    $stmtCliente->execute();
-    $clienteId = $stmtCliente->insert_id;
-    $stmtCliente->close();
+    if (empty($clienteId)) {
+        // Inserta los datos del cliente en la tabla clientes
+        $stmtCliente = $conn->prepare("INSERT INTO clientes (nombre, identificacion, celular, email, direccion) VALUES (?, ?, ?, ?, ?)");
+        $stmtCliente->bind_param("sssss", $nombreCliente, $identificacion, $celular, $email, $direccion);
+        $stmtCliente->execute();
+        $clienteId = $stmtCliente->insert_id;
+        $stmtCliente->close();
+    } else {
+        // Actualiza los datos del cliente existente
+        $stmtCliente = $conn->prepare("UPDATE clientes SET nombre = ?, celular = ?, email = ?, direccion = ? WHERE id = ?");
+        $stmtCliente->bind_param("ssssi", $nombreCliente, $celular, $email, $direccion, $clienteId);
+        $stmtCliente->execute();
+        $stmtCliente->close();
+    }
 
     // Insertar datos en la tabla reparaciones
     $stmtReparacion = $conn->prepare("INSERT INTO reparaciones (cliente_id, tipo_dispositivo, marca, modelo, estado_fisico, contrasena_patron, serial_imei, diagnostico, tecnico_recibe, estado_reparacion, valor_repuestos, valor_mano_obra, valor_total_reparacion, abono_cliente, fecha_hora_recepcion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
