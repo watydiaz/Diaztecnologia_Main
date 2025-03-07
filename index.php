@@ -1,15 +1,19 @@
-<!-- filepath: c:\Users\Administrador\OneDrive - SENA\Proyectos\Diaztecnologia\index.php -->
 <?php
 // Incluir el archivo de cabecera
-include 'views/header.php';
+include 'includes/header.php';
 ?>
 
-<h1>Bienvenido a la Página Principal</h1>
+
+<center>
+<div class="container-fluid">
+<h1 clas>Bienvenido a la Página Principal</h1>
 <p>Este es el contenido principal de tu página.</p>
+</div>
+</center>
 
 <!-- Aquí puedes incluir más contenido o secciones según sea necesario -->
 
 <?php
 // Incluir el archivo de pie de página
-include 'views/footer.php';
+include 'includes/footer.php';
 ?>
